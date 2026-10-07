@@ -1,0 +1,674 @@
+{
+  "posts": [
+    {
+      "id": "post-1",
+      "authorName": "H. Sudirman Santoso",
+      "authorRole": "Ketua Kelompok Tani Makmur",
+      "authorAvatar": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=150&auto=format&fit=crop&q=80",
+      "authorVerified": true,
+      "authorLocation": "Subang, Jawa Barat",
+      "createdAt": "15 menit yang lalu",
+      "content": "Alhamdulillah panen raya padi Ciherang musim gadu tahun ini tembus 8.2 ton per hektar! Kunci utamanya adalah rotasi pemupukan berimbang dan penyemprotan pupuk organik cair trichoderma di fase bunting. Teman-teman petani sekitar Subang mari rapat koordinasi harga gabah di balai tani besok sore!",
+      "mediaType": "image",
+      "mediaUrl": "https://images.unsplash.com/photo-1500937386664-56d1dfef3854?w=800&auto=format&fit=crop&q=80",
+      "likes": 42,
+      "likedBy": [],
+      "commentsCount": 6,
+      "comments": [
+        {
+          "id": "c-1",
+          "userName": "Pak Joko Petani",
+          "userAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+          "text": "Mantap Pak Haji! Dosis trichodermanya berapa liter per tangki 16L?",
+          "createdAt": "10 menit yang lalu"
+        },
+        {
+          "id": "c-2",
+          "userName": "H. Sudirman Santoso",
+          "userAvatar": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=100&auto=format&fit=crop&q=80",
+          "text": "Pakai 200ml per tangki Pak Joko, semprot pagi jam 7 sebelum panas terik.",
+          "createdAt": "5 menit yang lalu"
+        }
+      ],
+      "shares": 18,
+      "tag": "Panen Padi"
+    },
+    {
+      "id": "post-2",
+      "authorName": "Siti Rahmawati S.P.",
+      "authorRole": "Penyuluh Pertanian Lapangan (PPL)",
+      "authorAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+      "authorVerified": true,
+      "authorLocation": "Malang, Jawa Timur",
+      "createdAt": "1 jam yang lalu",
+      "content": "Waspada serangan ulat grayak (Spodoptera frugiperda) pada tanaman jagung muda umur 15-30 HST. Periksa titik tumbuh tanaman, jika ada serbuk kotoran mirip gergaji, segera lakukan aplikasi pestisida nabati rebusan daun tembakau dan mimba atau insektisida berbahan aktif emamektin benzoat!",
+      "mediaType": "image",
+      "mediaUrl": "https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=800&auto=format&fit=crop&q=80",
+      "likes": 90,
+      "likedBy": [
+        "default"
+      ],
+      "commentsCount": 12,
+      "comments": [
+        {
+          "id": "c-3",
+          "userName": "Bambang Sukses",
+          "userAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=100&auto=format&fit=crop&q=80",
+          "text": "Sangat bermanfaat bu PPL, tanaman jagung saya di Kediri pas kena gejala ini kemarin.",
+          "createdAt": "40 menit yang lalu"
+        }
+      ],
+      "shares": 34,
+      "tag": "Info Hama"
+    }
+  ],
+  "products": [
+    {
+      "id": "prod-1",
+      "title": "Bibit Padi Unggul Inpari 32 HDB Bersertifikat Grade A (Super Anakan)",
+      "category": "Benih & Bibit",
+      "originalPrice": 135000,
+      "discountPrice": 95000,
+      "weight": "5 Kg",
+      "sellerName": "Kelompok Tani Dahu Makmur",
+      "sellerWa": "6281234567890",
+      "sellerCity": "Subang, Jawa Barat",
+      "sellerAvatar": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=150&auto=format&fit=crop&q=80",
+      "sellerRating": 4.9,
+      "mediaType": "image",
+      "mediaUrl": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=800&auto=format&fit=crop&q=80",
+      "description": "Benih padi Inpari 32 HDB resmi berlabel biru Balai Benih. Potensi hasil 10-12 ton/ha, tahan rebah, tahan hawar daun bakteri (kresek) dan blas. Daya kecambah > 90%.",
+      "stock": 140,
+      "soldCount": 382,
+      "createdAt": "2026-09-28",
+      "views": 1250
+    },
+    {
+      "id": "prod-2",
+      "title": "Pupuk Hayati Organik Cair Super Bio-Dahu Plus Trichoderma & Asam Humat",
+      "category": "Pupuk & Nutrisi",
+      "originalPrice": 85000,
+      "discountPrice": 58000,
+      "weight": "1 Liter",
+      "sellerName": "Agro Niaga Sejahtera",
+      "sellerWa": "6281398765432",
+      "sellerCity": "Karawang, Jawa Barat",
+      "sellerAvatar": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=150&auto=format&fit=crop&q=80",
+      "sellerRating": 4.8,
+      "mediaType": "image",
+      "mediaUrl": "https://images.unsplash.com/photo-1592417817098-8f3d6910985b?w=800&auto=format&fit=crop&q=80",
+      "description": "Pupuk cair konsentrat dengan bakteri penambat N, pelarut P, dan agen hayati pencegah jamur akar/layu fusarium. Sangat cocok untuk cabai, tomat, bawang, padi, dan sayuran.",
+      "stock": 85,
+      "soldCount": 620,
+      "createdAt": "2026-09-25",
+      "views": 2100
+    },
+    {
+      "id": "prod-3",
+      "title": "Cabai Rawit Merah Segar Petik Kebun Lereng Gunung (Kualitas Super)",
+      "category": "Hasil Panen Segar",
+      "originalPrice": 65000,
+      "discountPrice": 42000,
+      "weight": "1 Kg",
+      "sellerName": "Kebun Berkah Wonosobo",
+      "sellerWa": "6285211223344",
+      "sellerCity": "Wonosobo, Jawa Tengah",
+      "sellerAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      "sellerRating": 5,
+      "mediaType": "image",
+      "mediaUrl": "https://images.unsplash.com/photo-1588252303782-cb80119abd6d?w=800&auto=format&fit=crop&q=80",
+      "description": "Cabai rawit merah segar dipetik langsung subuh hari saat order masuk. Pedas mantap, tangkai hijau segar, tidak layu dan tahan simpan lama.",
+      "stock": 500,
+      "soldCount": 940,
+      "createdAt": "2026-09-29",
+      "views": 3410
+    },
+    {
+      "id": "prod-4",
+      "title": "Alat Semprot Elektrik Tani 16 Liter 2-in-1 Rechargeable Battery High Pressure",
+      "category": "Alat & Mesin Tani",
+      "originalPrice": 450000,
+      "discountPrice": 325000,
+      "weight": "5 Kg",
+      "sellerName": "Toko Tani Sumber Rejeki",
+      "sellerWa": "6281987654321",
+      "sellerCity": "Boyolali, Jawa Tengah",
+      "sellerAvatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+      "sellerRating": 4.9,
+      "mediaType": "image",
+      "mediaUrl": "https://images.unsplash.com/photo-1589923188900-85dae523342b?w=800&auto=format&fit=crop&q=80",
+      "description": "Knapsack sprayer tangki tebal anti pecah. Baterai tahan 18 kali semprot isi tangki. Dilengkapi 4 nozel kuningan bervariasi.",
+      "stock": 35,
+      "soldCount": 145,
+      "createdAt": "2026-09-20",
+      "views": 1890
+    }
+  ],
+  "globalChat": [
+    {
+      "id": "gc-1",
+      "senderId": "sys-1",
+      "senderName": "Sistem Dahu Tani (Official)",
+      "senderAvatar": "/icon.svg",
+      "senderLocation": "Server Pusat Indonesia",
+      "text": "Selamat datang di Ruang Chat Global Dahu Tani! Seluruh petani, penyuluh, dan pedagang di Indonesia saling terhubung realtime di sini. Silakan berdiskusi info panen, cuaca, dan berbagi tips pertanian!",
+      "createdAt": "Hari ini, 06:00"
+    },
+    {
+      "id": "gc-2",
+      "senderId": "user-joko",
+      "senderName": "Pak Joko Santoso",
+      "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80",
+      "senderLocation": "Brebes, Jateng",
+      "text": "Halo sedulur tani, harga bawang merah super di pasar Induk Brebes hari ini Rp 28.000/kg. Panen minggu depan ada yang siap borong?",
+      "createdAt": "07:35"
+    },
+    {
+      "id": "gc-3",
+      "senderId": "user-rahma",
+      "senderName": "Ibu Rahmawati (PPL)",
+      "senderAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80",
+      "senderLocation": "Malang, Jatim",
+      "text": "Bagi rekan-rekan yang tanamannya kena bercak daun atau layu bakteri, bisa langsung foto di tab Diagnosa AI ya, hasilnya langsung keluar beserta dosis obatnya.",
+      "createdAt": "08:12"
+    },
+    {
+      "id": "gc-1790858909894-ur1o",
+      "senderId": "default",
+      "senderName": "Sunardi Petani Milenial",
+      "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+      "senderLocation": "Subang, Jawa Barat",
+      "text": "Halo @Agro Niaga Sejahtera, saya berminat dengan produk Anda \"Pupuk Hayati Organik Cair Super Bio-Dahu Plus Trichoderma & Asam Humat\". Apakah masih ada stok dan bisa kirim ke Subang?",
+      "mediaUrl": "",
+      "createdAt": "12:48"
+    }
+  ],
+  "conversations": [
+    {
+      "id": "conv-joko",
+      "participantId": "user-joko",
+      "participantName": "Pak Joko Santoso",
+      "participantRole": "Petani Bawang Merah",
+      "participantAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+      "participantLocation": "Brebes, Jawa Tengah",
+      "participantWa": "6281234567890",
+      "lastMessage": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+      "lastMessageTime": "13:08",
+      "unreadCount": 5,
+      "productContext": {
+        "id": "prod-1",
+        "title": "Bibit Padi Unggul Inpari 32 HDB Bersertifikat Grade A",
+        "price": 95000,
+        "image": "https://images.unsplash.com/photo-1586201375761-83865001e31c?w=400&auto=format&fit=crop&q=80"
+      },
+      "messages": [
+        {
+          "id": "pm-1",
+          "conversationId": "conv-joko",
+          "senderId": "user-joko",
+          "senderName": "Pak Joko Santoso",
+          "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "text": "Assalamu alaikum Kang Sunardi, salam kenal sesama petani.",
+          "createdAt": "08:40"
+        },
+        {
+          "id": "pm-2",
+          "conversationId": "conv-joko",
+          "senderId": "user-joko",
+          "senderName": "Pak Joko Santoso",
+          "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "text": "Apakah benih padi Inpari 32 masih ready 5 karung Kang Sunardi?",
+          "createdAt": "08:45"
+        },
+        {
+          "id": "pm-1790859996844-trt9",
+          "conversationId": "conv-joko",
+          "senderId": "default",
+          "senderName": "Sunardi Petani Milenial",
+          "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80",
+          "text": "Halo Pak Joko, benih padi Inpari 32 masih ada 10 karung siap kirim.",
+          "mediaUrl": "",
+          "createdAt": "13:06"
+        },
+        {
+          "id": "pm-1790859998847-reply",
+          "conversationId": "conv-joko",
+          "senderId": "user-joko",
+          "senderName": "Pak Joko Santoso",
+          "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "text": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+          "createdAt": "13:06"
+        },
+        {
+          "id": "pm-1790860060675-ef5y",
+          "conversationId": "conv-joko",
+          "senderId": "default",
+          "senderName": "Sunardi Petani Milenial",
+          "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+          "text": "Ya",
+          "mediaUrl": "",
+          "createdAt": "13:07"
+        },
+        {
+          "id": "pm-1790860062677-reply",
+          "conversationId": "conv-joko",
+          "senderId": "user-joko",
+          "senderName": "Pak Joko Santoso",
+          "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "text": "Siap Mas, stok aman dan segar siap kirim hari ini. Mau dikirim via kargo tani atau jemput di lokasi?",
+          "createdAt": "13:07"
+        },
+        {
+          "id": "pm-1790860079360-cxq9",
+          "conversationId": "conv-joko",
+          "senderId": "default",
+          "senderName": "Sunardi Petani Milenial",
+          "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+          "text": "Ok",
+          "mediaUrl": "",
+          "createdAt": "13:07"
+        },
+        {
+          "id": "pm-1790860081361-reply",
+          "conversationId": "conv-joko",
+          "senderId": "user-joko",
+          "senderName": "Pak Joko Santoso",
+          "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "text": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+          "createdAt": "13:08"
+        },
+        {
+          "id": "pm-1790860102509-ieuo",
+          "conversationId": "conv-joko",
+          "senderId": "default",
+          "senderName": "Sunardi Petani Milenial",
+          "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+          "text": "Baik",
+          "mediaUrl": "",
+          "createdAt": "13:08"
+        },
+        {
+          "id": "pm-1790860104511-reply",
+          "conversationId": "conv-joko",
+          "senderId": "user-joko",
+          "senderName": "Pak Joko Santoso",
+          "senderAvatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "text": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+          "createdAt": "13:08"
+        }
+      ]
+    },
+    {
+      "id": "conv-rahma",
+      "participantId": "user-rahma",
+      "participantName": "Siti Rahmawati S.P.",
+      "participantRole": "Penyuluh Pertanian Lapangan (PPL)",
+      "participantAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+      "participantLocation": "Malang, Jawa Timur",
+      "participantWa": "6281398765432",
+      "lastMessage": "Mantap, sudah saya catat ya pesanannya. Nanti saya hubungi juga via WhatsApp.",
+      "lastMessageTime": "13:12",
+      "unreadCount": 3,
+      "messages": [
+        {
+          "id": "pm-3",
+          "conversationId": "conv-rahma",
+          "senderId": "default",
+          "senderName": "Sunardi Petani Milenial",
+          "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80",
+          "text": "Selamat sore Bu Rahma, konsultasi jadwal semprot trichoderma untuk cabai baiknya pagi atau sore?",
+          "createdAt": "Kemarin, 16:30"
+        },
+        {
+          "id": "pm-4",
+          "conversationId": "conv-rahma",
+          "senderId": "user-rahma",
+          "senderName": "Siti Rahmawati S.P.",
+          "senderAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+          "text": "Siap Pak, trichodermanya semprot pagi jam 7 ya agar sporanya tidak rusak sinar UV.",
+          "createdAt": "Kemarin, 17:15"
+        },
+        {
+          "id": "pm-1790860177057-tnzh",
+          "conversationId": "conv-rahma",
+          "senderId": "default",
+          "senderName": "Sunardi Petani Milenial",
+          "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+          "text": "Ok",
+          "mediaUrl": "",
+          "createdAt": "13:09"
+        },
+        {
+          "id": "pm-1790860179059-reply",
+          "conversationId": "conv-rahma",
+          "senderId": "user-rahma",
+          "senderName": "Siti Rahmawati S.P.",
+          "senderAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+          "text": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+          "createdAt": "13:09"
+        },
+        {
+          "id": "pm-1790860325280-edl6",
+          "conversationId": "conv-rahma",
+          "senderId": "default",
+          "senderName": "Sunardi Petani Milenial",
+          "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+          "text": "Baik",
+          "mediaUrl": "",
+          "createdAt": "13:12"
+        },
+        {
+          "id": "pm-1790860327282-reply",
+          "conversationId": "conv-rahma",
+          "senderId": "user-rahma",
+          "senderName": "Siti Rahmawati S.P.",
+          "senderAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+          "text": "Mantap, sudah saya catat ya pesanannya. Nanti saya hubungi juga via WhatsApp.",
+          "createdAt": "13:12"
+        },
+        {
+          "id": "pm-1790860360711-3wgk",
+          "conversationId": "conv-rahma",
+          "senderId": "default",
+          "senderName": "Sunardi Petani Milenial",
+          "senderAvatar": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+          "text": "Halo, apakah stok barang masih ready?",
+          "mediaUrl": "",
+          "createdAt": "13:12"
+        },
+        {
+          "id": "pm-1790860362713-reply",
+          "conversationId": "conv-rahma",
+          "senderId": "user-rahma",
+          "senderName": "Siti Rahmawati S.P.",
+          "senderAvatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+          "text": "Mantap, sudah saya catat ya pesanannya. Nanti saya hubungi juga via WhatsApp.",
+          "createdAt": "13:12"
+        }
+      ]
+    }
+  ],
+  "notifications": [
+    {
+      "id": "notif-1790861057461-follow",
+      "type": "chat",
+      "title": "👤 Terhubung dengan Petani!",
+      "message": "Anda sekarang mengikuti Pak Joko Santoso (Petani Bawang Merah). Pembaruan statusnya akan muncul di feed Anda!",
+      "timestamp": "Baru saja",
+      "read": false,
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150"
+    },
+    {
+      "id": "notif-1790860362713-chat",
+      "type": "chat",
+      "title": "📩 Pesan Baru dari Siti Rahmawati S.P.",
+      "message": "Mantap, sudah saya catat ya pesanannya. Nanti saya hubungi juga via WhatsApp.",
+      "timestamp": "Baru saja",
+      "read": false,
+      "targetId": "conv-rahma",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": "notif-1790860327282-chat",
+      "type": "chat",
+      "title": "📩 Pesan Baru dari Siti Rahmawati S.P.",
+      "message": "Mantap, sudah saya catat ya pesanannya. Nanti saya hubungi juga via WhatsApp.",
+      "timestamp": "Baru saja",
+      "read": false,
+      "targetId": "conv-rahma",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": "notif-1790860179059-chat",
+      "type": "chat",
+      "title": "📩 Pesan Baru dari Siti Rahmawati S.P.",
+      "message": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+      "timestamp": "Baru saja",
+      "read": false,
+      "targetId": "conv-rahma",
+      "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": "notif-1790860104512-chat",
+      "type": "chat",
+      "title": "📩 Pesan Baru dari Pak Joko Santoso",
+      "message": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+      "timestamp": "Baru saja",
+      "read": false,
+      "targetId": "conv-joko",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": "notif-1790860081361-chat",
+      "type": "chat",
+      "title": "📩 Pesan Baru dari Pak Joko Santoso",
+      "message": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+      "timestamp": "Baru saja",
+      "read": false,
+      "targetId": "conv-joko",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": "notif-1790860062677-chat",
+      "type": "chat",
+      "title": "📩 Pesan Baru dari Pak Joko Santoso",
+      "message": "Siap Mas, stok aman dan segar siap kirim hari ini. Mau dikirim via kargo tani atau jemput di lokasi?",
+      "timestamp": "Baru saja",
+      "read": false,
+      "targetId": "conv-joko",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": "notif-1790859998847-chat",
+      "type": "chat",
+      "title": "📩 Pesan Baru dari Pak Joko Santoso",
+      "message": "Terima kasih responnya! Salam sukses untuk pertanian kita semua sedulur.",
+      "timestamp": "Baru saja",
+      "read": false,
+      "targetId": "conv-joko",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80"
+    },
+    {
+      "id": "notif-1",
+      "type": "sale",
+      "title": "🎉 Pesanan Produk Masuk!",
+      "message": "H. Sudirman Santoso baru saja membeli 2x Bibit Padi Inpari 32 (Total Rp 190.000). Silakan hubungi pembeli untuk atur pengiriman.",
+      "timestamp": "15 menit yang lalu",
+      "read": false,
+      "targetId": "prod-1",
+      "avatar": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=100",
+      "metadata": {
+        "buyerName": "H. Sudirman Santoso",
+        "productTitle": "Bibit Padi Inpari 32 HDB",
+        "amount": 190000
+      }
+    },
+    {
+      "id": "notif-2",
+      "type": "comment",
+      "title": "💬 Komentar Baru di Postingan",
+      "message": "Pak Joko Petani mengomentari postingan panen padi Anda: \"Mantap Pak Haji! Dosis trichodermanya berapa liter per tangki 16L?\"",
+      "timestamp": "35 menit yang lalu",
+      "read": false,
+      "targetId": "post-1",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100",
+      "metadata": {
+        "buyerName": "Pak Joko Petani",
+        "postTitle": "Panen Raya Padi Ciherang Subang"
+      }
+    },
+    {
+      "id": "notif-3",
+      "type": "chat",
+      "title": "📩 Pesan Pribadi Baru",
+      "message": "Pak Joko Santoso: \"Apakah benih padi Inpari 32 masih ready 5 karung Kang Sunardi?\"",
+      "timestamp": "45 menit yang lalu",
+      "read": false,
+      "targetId": "conv-joko",
+      "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100"
+    }
+  ],
+  "profiles": {
+    "default": {
+      "id": "default",
+      "name": "Sunardi Petani Milenial",
+      "phone": "081234567890",
+      "role": "Petani Hortikultura & Produsen Benih",
+      "bio": "Mengembangkan pertanian presisi ramah lingkungan di tanah Nusantara. Siap bermitra suplai sayuran dan cabai kualitas ekspor.",
+      "avatarUrl": "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80",
+      "coverUrl": "https://images.unsplash.com/photo-1500382017468-9049fed747ef?w=1200&auto=format&fit=crop&q=80",
+      "province": "Jawa Barat",
+      "city": "Subang",
+      "district": "Pagaden",
+      "farmAddress": "Blok Sawah Lega No. 42, RT 03 / RW 02, Desa Gembor, Lahan Tani Dahu Lestari",
+      "joinedDate": "Agustus 2024",
+      "verifiedFarmer": true,
+      "totalProductsSold": 412,
+      "rating": 4.95,
+      "followersCount": 1284,
+      "followingCount": 3,
+      "followers": [
+        {
+          "id": "user-joko",
+          "name": "Pak Joko Santoso",
+          "role": "Petani Bawang Merah Brebes",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "location": "Brebes, Jateng",
+          "isFollowingBack": true
+        },
+        {
+          "id": "user-rahma",
+          "name": "Siti Rahmawati S.P.",
+          "role": "Penyuluh Pertanian Lapangan (PPL)",
+          "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+          "location": "Malang, Jatim",
+          "isFollowingBack": true
+        },
+        {
+          "id": "user-sudirman",
+          "name": "H. Sudirman Santoso",
+          "role": "Ketua Kelompok Tani Makmur",
+          "avatar": "https://images.unsplash.com/photo-1544717305-2782549b5136?w=150&auto=format&fit=crop&q=80",
+          "location": "Subang, Jabar",
+          "isFollowingBack": true
+        },
+        {
+          "id": "user-wonosobo",
+          "name": "Kebun Berkah Wonosobo",
+          "role": "Produsen Cabai Rawit Lereng",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+          "location": "Wonosobo, Jateng",
+          "isFollowingBack": false
+        },
+        {
+          "id": "user-bambang",
+          "name": "Bambang Sukses",
+          "role": "Petani Jagung Hibrida",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80",
+          "location": "Kediri, Jatim",
+          "isFollowingBack": true
+        }
+      ],
+      "following": [
+        {
+          "id": "user-joko",
+          "name": "Pak Joko Santoso",
+          "avatar": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150",
+          "location": "Brebes",
+          "role": "Petani Bawang Merah",
+          "isFollowingBack": true
+        },
+        {
+          "id": "user-rahma",
+          "name": "Siti Rahmawati S.P.",
+          "role": "Penyuluh Pertanian Lapangan (PPL)",
+          "avatar": "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=150&auto=format&fit=crop&q=80",
+          "location": "Malang, Jatim",
+          "isFollowingBack": true
+        },
+        {
+          "id": "user-toko",
+          "name": "Toko Tani Sumber Rejeki",
+          "role": "Distributor Alsintan & Sprayer",
+          "avatar": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop&q=80",
+          "location": "Boyolali, Jateng",
+          "isFollowingBack": false
+        }
+      ]
+    }
+  },
+  "analytics": {
+    "totalProfileViews": 2487,
+    "totalProductViews": 8650,
+    "totalVideoViews": 5320,
+    "totalCommunityInteractions": 1429,
+    "visitorLog": [
+      {
+        "id": "v-1790860507758",
+        "timestamp": "Baru saja",
+        "location": "Subang, Jawa Barat",
+        "type": "Melihat Profil Petani"
+      },
+      {
+        "id": "v-1790860385545",
+        "timestamp": "Baru saja",
+        "location": "Subang, Jawa Barat",
+        "type": "Melihat Profil Petani"
+      },
+      {
+        "id": "v-1790860188012",
+        "timestamp": "Baru saja",
+        "location": "Subang, Jawa Barat",
+        "type": "Melihat Profil Petani"
+      },
+      {
+        "id": "v-1790859833208",
+        "timestamp": "Baru saja",
+        "location": "Subang, Jawa Barat",
+        "type": "Melihat Profil Petani"
+      },
+      {
+        "id": "v-1790859229488",
+        "timestamp": "Baru saja",
+        "location": "Subang, Jawa Barat",
+        "type": "Melihat Profil Petani"
+      },
+      {
+        "id": "v-1790859080311",
+        "timestamp": "Baru saja",
+        "location": "Subang, Jawa Barat",
+        "type": "Melihat Profil Petani"
+      },
+      {
+        "id": "v-1790858790579",
+        "timestamp": "Baru saja",
+        "location": "Subang, Jawa Barat",
+        "type": "Melihat Profil Petani"
+      },
+      {
+        "id": "v-1",
+        "timestamp": "Baru saja",
+        "location": "Bandung, Jawa Barat",
+        "type": "Melihat Profil Petani"
+      },
+      {
+        "id": "v-2",
+        "timestamp": "5 menit lalu",
+        "location": "Surabaya, Jawa Timur",
+        "type": "Melihat Produk Bibit Padi"
+      },
+      {
+        "id": "v-3",
+        "timestamp": "12 menit lalu",
+        "location": "Medan, Sumatera Utara",
+        "type": "Menonton Video Tips Panen"
+      },
+      {
+        "id": "v-4",
+        "timestamp": "24 menit lalu",
+        "location": "Makassar, Sulawesi Selatan",
+        "type": "Chat Global Tani"
+      }
+    ]
+  }
+}

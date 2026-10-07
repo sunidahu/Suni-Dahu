@@ -1,0 +1,10 @@
+{
+  "name": "Dahu Tani",
+  "description": "Aplikasi komunitas pertanian modern, marketplace hasil tani & sarana produksi, diagnosa penyakit tanaman cerdas Gemini AI, chat global realtime, dan dasbor analitik petani Indonesia.",
+  "requestFramePermissions": [
+    "camera",
+    "microphone",
+    "geolocation"
+  ],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

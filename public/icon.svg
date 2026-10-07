@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#15803d" />
+      <stop offset="50%" stop-color="#166534" />
+      <stop offset="100%" stop-color="#14532d" />
+    </linearGradient>
+    <linearGradient id="leafGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4ade80" />
+      <stop offset="100%" stop-color="#22c55e" />
+    </linearGradient>
+    <linearGradient id="goldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a" />
+      <stop offset="50%" stop-color="#facc15" />
+      <stop offset="100%" stop-color="#eab308" />
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000000" flood-opacity="0.3" />
+    </filter>
+  </defs>
+
+  <!-- Background with safe rounded corners -->
+  <rect width="512" height="512" rx="110" fill="url(#bgGrad)" />
+
+  <!-- Subtle glow circle in the center -->
+  <circle cx="256" cy="256" r="190" fill="#ffffff" fill-opacity="0.04" />
+  <circle cx="256" cy="256" r="140" fill="#ffffff" fill-opacity="0.04" />
+
+  <!-- Main Agricultural Icon Group (within safe-zone 80%) -->
+  <g filter="url(#shadow)">
+    <!-- Soil mound / furrow base -->
+    <path d="M140 370 Q256 340 372 370 Q256 395 140 370 Z" fill="#ca8a04" opacity="0.85" />
+    <ellipse cx="256" cy="372" rx="90" ry="12" fill="#854d0e" opacity="0.9" />
+
+    <!-- Left Sprout Leaf -->
+    <path d="M256 350 C240 280 160 270 140 220 C180 200 240 230 252 300 Z" fill="url(#leafGrad)" />
+    
+    <!-- Central Sprout Stem & Leaf -->
+    <path d="M252 360 C254 280 270 200 320 150 C330 190 310 260 264 340 Z" fill="#86efac" />
+    
+    <!-- Right Golden Paddy Grain / Seed Cluster -->
+    <g transform="translate(0, -10)">
+      <path d="M260 330 C270 260 330 210 380 180 C360 225 320 280 266 335 Z" fill="url(#goldGrad)" />
+      <!-- Golden Grains -->
+      <ellipse cx="330" cy="200" rx="14" ry="24" transform="rotate(35 330 200)" fill="url(#goldGrad)" stroke="#a16207" stroke-width="2" />
+      <ellipse cx="355" cy="235" rx="13" ry="22" transform="rotate(45 355 235)" fill="url(#goldGrad)" stroke="#a16207" stroke-width="2" />
+      <ellipse cx="310" cy="230" rx="13" ry="22" transform="rotate(25 310 230)" fill="url(#goldGrad)" stroke="#a16207" stroke-width="2" />
+    </g>
+
+    <!-- Center Heart Seed / Tech Node -->
+    <circle cx="256" cy="300" r="16" fill="#fef08a" stroke="#ca8a04" stroke-width="3" />
+    <circle cx="256" cy="300" r="8" fill="#15803d" />
+  </g>
+
+  <!-- Text brand label inside icon bottom -->
+  <text x="256" y="445" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="800" font-size="34" letter-spacing="4" fill="#ffffff" opacity="0.95">DAHU TANI</text>
+  <text x="256" y="475" text-anchor="middle" font-family="system-ui, -apple-system, sans-serif" font-weight="600" font-size="16" letter-spacing="6" fill="#86efac" opacity="0.9">SMART AGRI</text>
+</svg>
