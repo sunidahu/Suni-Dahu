@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { ShoppingBag, MessageSquare, MessageCircle, X, ChevronRight } from 'lucide-react';
+import { ShoppingBag, MessageSquare, MessageCircle, X, ChevronRight, CheckCircle } from 'lucide-react';
 import { NotificationItem } from '../types';
 
 interface NotificationToastProps {
@@ -31,6 +31,9 @@ export const NotificationToast: React.FC<NotificationToastProps> = ({
         return <MessageCircle className="w-5 h-5 text-emerald-300" />;
       case 'comment':
         return <MessageSquare className="w-5 h-5 text-blue-300" />;
+      case 'system':
+      default:
+        return <CheckCircle className="w-5 h-5 text-emerald-400" />;
     }
   };
 

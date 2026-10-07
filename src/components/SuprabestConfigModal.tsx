@@ -14,6 +14,8 @@ import {
   ArrowRight,
   Loader2,
   CheckCheck,
+  Zap,
+  Download,
 } from 'lucide-react';
 import { api } from '../services/api';
 import { SupabaseStatus, SupabaseSyncResult } from '../types';
@@ -41,6 +43,13 @@ export const SuprabestConfigModal: React.FC<SuprabestConfigModalProps> = ({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [copiedSql, setCopiedSql] = useState(false);
+  const [dbPassword, setDbPassword] = useState('');
+  const [connectionString, setConnectionString] = useState('');
+  const [executingSql, setExecutingSql] = useState(false);
+  const [sqlResult, setSqlResult] = useState<string | null>(null);
+  const [pullingData, setPullingData] = useState(false);
+
+  const projectRef = supabaseUrl.match(/https:\/\/([a-zA-Z0-9_-]+)\.supabase\.co/)?.[1] || 'ttaokomuatwnpzkjhrcu';
 
   useEffect(() => {
     if (isOpen) {
@@ -102,18 +111,64 @@ export const SuprabestConfigModal: React.FC<SuprabestConfigModalProps> = ({
     }
   };
 
+  const handlePullData = async () => {
+    setPullingData(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const res = await api.pullFromSupabase();
+      setSuccessMessage(res.message || 'Berhasil menarik data dari Supabase!');
+      await loadStatus();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Gagal menarik data dari Supabase.');
+    } finally {
+      setPullingData(false);
+    }
+  };
+
+  const handleExecuteSql = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!dbPassword.trim() && !connectionString.trim()) {
+      setErrorMessage('Harap masukkan Password Database Supabase atau Connection String Anda.');
+      return;
+    }
+
+    setExecutingSql(true);
+    setErrorMessage(null);
+    setSqlResult(null);
+
+    try {
+      const res = await api.executeSupabaseSql({
+        dbPassword: dbPassword.trim(),
+        connectionString: connectionString.trim(),
+      });
+      setSqlResult(res.message);
+      setSuccessMessage('Skrip SQL berhasil dijalankan ke Supabase!');
+      await loadStatus();
+    } catch (err: any) {
+      setErrorMessage(err.message || 'Gagal menjalankan SQL ke Supabase.');
+    } finally {
+      setExecutingSql(false);
+    }
+  };
+
   const sqlSchemaScript = `-- ========================================================================
--- SKRIP STRUKTUR DATABASE SUPABASE UNTUK APLIKASI SUNI DAHU / DAHU TANI
--- Jalankan skrip ini di SQL Editor pada Dashboard Supabase Anda:
--- https://supabase.com/dashboard/project/_/sql/new
+-- SKRIP STRUKTUR DATABASE SUPABASE LENGKAP UNTUK APLIKASI DAHU TANI / SUNI DAHU
+-- Jalankan skrip ini di SQL Editor Dashboard Supabase Anda:
+-- https://supabase.com/dashboard/project/${projectRef}/sql/new
+-- (Atau gunakan tombol Eksekusi Otomatis langsung di modal Supabase Dahu Tani)
 -- ========================================================================
 
--- 1. Tabel Profil Petani & Pengguna (profiles)
+-- 1. TABEL PROFIL PETANI & PENGGUNA (profiles)
 CREATE TABLE IF NOT EXISTS public.profiles (
   id TEXT PRIMARY KEY,
-  name TEXT NOT NULL,
+  name TEXT,
+  full_name TEXT,
+  email TEXT,
   role TEXT DEFAULT 'Petani Maju',
   avatar TEXT,
+  avatar_url TEXT,
   cover_image TEXT,
   phone TEXT,
   location TEXT DEFAULT 'Subang, Jawa Barat',
@@ -122,31 +177,81 @@ CREATE TABLE IF NOT EXISTS public.profiles (
   bio TEXT DEFAULT 'Petani mandiri penggerak pertanian ramah lingkungan.',
   followers_count INTEGER DEFAULT 142,
   following_count INTEGER DEFAULT 58,
+  balance NUMERIC DEFAULT 100000,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 2. Tabel Postingan Beranda & Komunitas (posts)
+-- Pastikan kolom yang mungkin belum ada di tabel profiles lama ditambahkan:
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS full_name TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS email TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS role TEXT DEFAULT 'Petani Maju';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS avatar_url TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS cover_image TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS phone TEXT;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS location TEXT DEFAULT 'Subang, Jawa Barat';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS land_size TEXT DEFAULT '1.5 Hektar';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS crops TEXT[] DEFAULT ARRAY['Padi Ciherang', 'Cabai Rawit', 'Jagung Manis'];
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS bio TEXT DEFAULT 'Petani mandiri penggerak pertanian ramah lingkungan.';
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS followers_count INTEGER DEFAULT 142;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS following_count INTEGER DEFAULT 58;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS balance NUMERIC DEFAULT 100000;
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE public.profiles ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- 2. TABEL POSTINGAN BERANDA & KOMUNITAS (posts)
 CREATE TABLE IF NOT EXISTS public.posts (
   id TEXT PRIMARY KEY,
-  author_name TEXT NOT NULL,
+  author_name TEXT DEFAULT 'Petani Dahu',
   author_role TEXT DEFAULT 'Petani',
   author_avatar TEXT,
   author_phone TEXT,
   author_id TEXT,
+  author_verified BOOLEAN DEFAULT TRUE,
+  author_location TEXT DEFAULT 'Indonesia',
   content TEXT NOT NULL,
+  media_type TEXT DEFAULT 'none',
+  media_url TEXT,
   image_url TEXT,
   video_url TEXT,
   likes INTEGER DEFAULT 0,
   liked_by_me BOOLEAN DEFAULT FALSE,
+  comments_count INTEGER DEFAULT 0,
+  shares INTEGER DEFAULT 0,
+  tag TEXT DEFAULT 'Komunitas Tani',
+  user_id TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 3. Tabel Komentar Postingan (comments)
+-- Pastikan kolom yang mungkin belum ada di tabel posts lama ditambahkan:
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS author_name TEXT DEFAULT 'Petani Dahu';
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS author_role TEXT DEFAULT 'Petani';
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS author_avatar TEXT;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS author_phone TEXT;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS author_id TEXT;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS author_verified BOOLEAN DEFAULT TRUE;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS author_location TEXT DEFAULT 'Indonesia';
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS content TEXT DEFAULT '';
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS media_type TEXT DEFAULT 'none';
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS media_url TEXT;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS video_url TEXT;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS likes INTEGER DEFAULT 0;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS liked_by_me BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS comments_count INTEGER DEFAULT 0;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS shares INTEGER DEFAULT 0;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS tag TEXT DEFAULT 'Komunitas Tani';
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS user_id TEXT;
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE public.posts ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- 3. TABEL KOMENTAR POSTINGAN (comments)
 CREATE TABLE IF NOT EXISTS public.comments (
   id TEXT PRIMARY KEY,
-  post_id TEXT NOT NULL REFERENCES public.posts(id) ON DELETE CASCADE,
+  post_id TEXT NOT NULL,
   author_name TEXT NOT NULL,
   author_role TEXT DEFAULT 'Petani',
   author_avatar TEXT,
@@ -154,55 +259,125 @@ CREATE TABLE IF NOT EXISTS public.comments (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 4. Tabel Produk Pasar Tani (products)
+ALTER TABLE public.comments ADD COLUMN IF NOT EXISTS post_id TEXT;
+ALTER TABLE public.comments ADD COLUMN IF NOT EXISTS author_name TEXT;
+ALTER TABLE public.comments ADD COLUMN IF NOT EXISTS author_role TEXT DEFAULT 'Petani';
+ALTER TABLE public.comments ADD COLUMN IF NOT EXISTS author_avatar TEXT;
+ALTER TABLE public.comments ADD COLUMN IF NOT EXISTS content TEXT;
+ALTER TABLE public.comments ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
+
+-- 4. TABEL PRODUK PASAR TANI (products)
 CREATE TABLE IF NOT EXISTS public.products (
   id TEXT PRIMARY KEY,
-  seller_name TEXT NOT NULL,
+  seller_name TEXT NOT NULL DEFAULT 'Petani Lokal',
   seller_role TEXT DEFAULT 'Petani Lokal',
   seller_avatar TEXT,
-  seller_phone TEXT NOT NULL,
+  seller_phone TEXT DEFAULT '08123456789',
   seller_id TEXT,
-  title TEXT NOT NULL,
+  title TEXT,
+  name TEXT,
   category TEXT DEFAULT 'Hasil Panen',
-  price NUMERIC NOT NULL,
+  price NUMERIC NOT NULL DEFAULT 0,
   original_price NUMERIC,
+  discount_price NUMERIC,
   unit TEXT DEFAULT 'kg',
+  weight TEXT DEFAULT '1 kg',
   stock INTEGER DEFAULT 100,
   location TEXT DEFAULT 'Subang, Jawa Barat',
+  seller_city TEXT DEFAULT 'Subang',
   description TEXT,
+  media_type TEXT DEFAULT 'image',
+  media_url TEXT,
   image_url TEXT,
   video_url TEXT,
   rating NUMERIC DEFAULT 4.9,
+  seller_rating NUMERIC DEFAULT 4.9,
   sold_count INTEGER DEFAULT 0,
   badge TEXT DEFAULT 'Petani Asli',
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 5. Tabel Obrolan Chat Global (chat_messages)
+-- Pastikan kolom yang mungkin belum ada di tabel products lama ditambahkan:
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seller_name TEXT DEFAULT 'Petani Lokal';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seller_role TEXT DEFAULT 'Petani Lokal';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seller_avatar TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seller_phone TEXT DEFAULT '08123456789';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seller_id TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS title TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS name TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'Hasil Panen';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS price NUMERIC DEFAULT 0;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS original_price NUMERIC;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS discount_price NUMERIC;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS unit TEXT DEFAULT 'kg';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS weight TEXT DEFAULT '1 kg';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS stock INTEGER DEFAULT 100;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS location TEXT DEFAULT 'Subang, Jawa Barat';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seller_city TEXT DEFAULT 'Subang';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS description TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS media_type TEXT DEFAULT 'image';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS media_url TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS video_url TEXT;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS rating NUMERIC DEFAULT 4.9;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS seller_rating NUMERIC DEFAULT 4.9;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS sold_count INTEGER DEFAULT 0;
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS badge TEXT DEFAULT 'Petani Asli';
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
+ALTER TABLE public.products ADD COLUMN IF NOT EXISTS updated_at TIMESTAMPTZ DEFAULT NOW();
+
+-- 5. TABEL OBROLAN CHAT GLOBAL (chat_messages)
 CREATE TABLE IF NOT EXISTS public.chat_messages (
   id TEXT PRIMARY KEY,
   user_id TEXT,
-  user_name TEXT NOT NULL,
+  sender_id TEXT,
+  user_name TEXT NOT NULL DEFAULT 'Petani',
+  sender_name TEXT DEFAULT 'Petani',
   user_role TEXT DEFAULT 'Petani',
   user_avatar TEXT,
+  sender_avatar TEXT,
   text TEXT,
   image_url TEXT,
+  media_url TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- 6. Tabel Pesan Pribadi (private_messages)
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS user_id TEXT;
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS sender_id TEXT;
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS user_name TEXT DEFAULT 'Petani';
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS sender_name TEXT DEFAULT 'Petani';
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS user_role TEXT DEFAULT 'Petani';
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS user_avatar TEXT;
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS sender_avatar TEXT;
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS text TEXT;
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS media_url TEXT;
+ALTER TABLE public.chat_messages ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
+
+-- 6. TABEL PESAN PRIBADI (private_messages)
 CREATE TABLE IF NOT EXISTS public.private_messages (
   id TEXT PRIMARY KEY,
   conversation_id TEXT NOT NULL,
   sender_id TEXT NOT NULL,
   text TEXT,
   image_url TEXT,
+  media_url TEXT,
   is_read BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Aktifkan Row Level Security (RLS) dengan Akses Terbuka untuk Anon/Authenticated
+ALTER TABLE public.private_messages ADD COLUMN IF NOT EXISTS conversation_id TEXT;
+ALTER TABLE public.private_messages ADD COLUMN IF NOT EXISTS sender_id TEXT;
+ALTER TABLE public.private_messages ADD COLUMN IF NOT EXISTS text TEXT;
+ALTER TABLE public.private_messages ADD COLUMN IF NOT EXISTS image_url TEXT;
+ALTER TABLE public.private_messages ADD COLUMN IF NOT EXISTS media_url TEXT;
+ALTER TABLE public.private_messages ADD COLUMN IF NOT EXISTS is_read BOOLEAN DEFAULT FALSE;
+ALTER TABLE public.private_messages ADD COLUMN IF NOT EXISTS created_at TIMESTAMPTZ DEFAULT NOW();
+
+-- ========================================================================
+-- KEAMANAN DAN HAK AKSES ROW LEVEL SECURITY (RLS)
+-- ========================================================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.comments ENABLE ROW LEVEL SECURITY;
@@ -210,23 +385,42 @@ ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.chat_messages ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.private_messages ENABLE ROW LEVEL SECURITY;
 
-CREATE POLICY "Public profiles read" ON public.profiles FOR SELECT USING (true);
-CREATE POLICY "Public profiles write" ON public.profiles FOR ALL USING (true);
+GRANT ALL ON TABLE public.profiles TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.posts TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.comments TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.products TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.chat_messages TO anon, authenticated, service_role;
+GRANT ALL ON TABLE public.private_messages TO anon, authenticated, service_role;
 
-CREATE POLICY "Public posts read" ON public.posts FOR SELECT USING (true);
-CREATE POLICY "Public posts write" ON public.posts FOR ALL USING (true);
+DROP POLICY IF EXISTS "Public profiles all" ON public.profiles;
+CREATE POLICY "Public profiles all" ON public.profiles FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Public comments read" ON public.comments FOR SELECT USING (true);
-CREATE POLICY "Public comments write" ON public.comments FOR ALL USING (true);
+DROP POLICY IF EXISTS "Public posts all" ON public.posts;
+CREATE POLICY "Public posts all" ON public.posts FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Public products read" ON public.products FOR SELECT USING (true);
-CREATE POLICY "Public products write" ON public.products FOR ALL USING (true);
+DROP POLICY IF EXISTS "Public comments all" ON public.comments;
+CREATE POLICY "Public comments all" ON public.comments FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Public chat_messages read" ON public.chat_messages FOR SELECT USING (true);
-CREATE POLICY "Public chat_messages write" ON public.chat_messages FOR ALL USING (true);
+DROP POLICY IF EXISTS "Public products all" ON public.products;
+CREATE POLICY "Public products all" ON public.products FOR ALL USING (true) WITH CHECK (true);
 
-CREATE POLICY "Public private_messages read" ON public.private_messages FOR SELECT USING (true);
-CREATE POLICY "Public private_messages write" ON public.private_messages FOR ALL USING (true);`;
+DROP POLICY IF EXISTS "Public chat_messages all" ON public.chat_messages;
+CREATE POLICY "Public chat_messages all" ON public.chat_messages FOR ALL USING (true) WITH CHECK (true);
+
+DROP POLICY IF EXISTS "Public private_messages all" ON public.private_messages;
+CREATE POLICY "Public private_messages all" ON public.private_messages FOR ALL USING (true) WITH CHECK (true);
+
+-- ========================================================================
+-- AKTIFKAN SUPABASE REALTIME REPLICATION
+-- ========================================================================
+DO $$
+BEGIN
+  IF EXISTS (SELECT 1 FROM pg_publication WHERE pubname = 'supabase_realtime') THEN
+    ALTER PUBLICATION supabase_realtime ADD TABLE public.posts, public.products, public.chat_messages, public.profiles, public.comments;
+  END IF;
+EXCEPTION
+  WHEN OTHERS THEN NULL;
+END $$;`;
 
   const copyToClipboard = () => {
     navigator.clipboard.writeText(sqlSchemaScript);
@@ -476,62 +670,165 @@ CREATE POLICY "Public private_messages write" ON public.private_messages FOR ALL
               </button>
             </form>
 
-            {/* Sync All Button */}
-            <div className="bg-emerald-50 border border-emerald-200/80 p-3.5 rounded-2xl flex items-center justify-between gap-3">
-              <div>
-                <div className="text-xs font-black text-emerald-950">
-                  Sinkronkan Semua Data Lokal
+            {/* Sync All Button & Pull Button */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              <div className="bg-emerald-50 border border-emerald-200/80 p-3 rounded-2xl flex flex-col justify-between gap-2.5">
+                <div>
+                  <div className="text-xs font-black text-emerald-950 flex items-center gap-1.5">
+                    <RefreshCw className="w-3.5 h-3.5 text-emerald-700" />
+                    <span>Sinkronkan ke Supabase</span>
+                  </div>
+                  <div className="text-[10px] text-emerald-800 mt-0.5">
+                    Unggah postingan, produk, dan chat lokal ke database Supabase
+                  </div>
                 </div>
-                <div className="text-[10px] text-emerald-800">
-                  Unggah seluruh status, produk pasar tani, dan chat lokal ke Supabase
-                </div>
+                <button
+                  type="button"
+                  onClick={handleSyncAll}
+                  disabled={syncing || !isConnected}
+                  className={`w-full py-2 rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 shadow-xs ${
+                    isConnected
+                      ? 'bg-emerald-700 hover:bg-emerald-600 text-white'
+                      : 'bg-stone-300 text-stone-500 cursor-not-allowed'
+                  }`}
+                >
+                  {syncing ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Menyinkronkan...</span>
+                    </>
+                  ) : (
+                    <>
+                      <RefreshCw className="w-3.5 h-3.5" />
+                      <span>Unggah Data Sekarang</span>
+                    </>
+                  )}
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={handleSyncAll}
-                disabled={syncing || !isConnected}
-                className={`px-3.5 py-2 rounded-xl text-xs font-black transition flex items-center gap-1.5 shrink-0 shadow-xs ${
-                  isConnected
-                    ? 'bg-emerald-700 hover:bg-emerald-600 text-white'
-                    : 'bg-stone-300 text-stone-500 cursor-not-allowed'
-                }`}
-              >
-                {syncing ? (
-                  <>
-                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    <span>Menyinkronkan...</span>
-                  </>
-                ) : (
-                  <>
-                    <RefreshCw className="w-3.5 h-3.5" />
-                    <span>Sinkronkan Sekarang</span>
-                  </>
-                )}
-              </button>
+
+              <div className="bg-blue-50 border border-blue-200/80 p-3 rounded-2xl flex flex-col justify-between gap-2.5">
+                <div>
+                  <div className="text-xs font-black text-blue-950 flex items-center gap-1.5">
+                    <Download className="w-3.5 h-3.5 text-blue-700" />
+                    <span>Tarik Data dari Supabase</span>
+                  </div>
+                  <div className="text-[10px] text-blue-800 mt-0.5">
+                    Perbarui postingan & produk lokal dengan data terbaru di Supabase
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handlePullData}
+                  disabled={pullingData || !isConnected}
+                  className={`w-full py-2 rounded-xl text-xs font-black transition flex items-center justify-center gap-1.5 shadow-xs ${
+                    isConnected
+                      ? 'bg-blue-700 hover:bg-blue-600 text-white'
+                      : 'bg-stone-300 text-stone-500 cursor-not-allowed'
+                  }`}
+                >
+                  {pullingData ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Menarik Data...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-3.5 h-3.5" />
+                      <span>Tarik Data Sekarang</span>
+                    </>
+                  )}
+                </button>
+              </div>
             </div>
           </div>
         )}
 
         {/* TAB 2: PANDUAN & SKRIP SQL */}
         {activeTab === 'sql' && (
-          <div className="space-y-3">
+          <div className="space-y-3.5">
+            {/* METODE 1: EKSEKUSI OTOMATIS DARI APLIKASI */}
+            <form
+              onSubmit={handleExecuteSql}
+              className="bg-emerald-50/80 border border-emerald-200 p-3.5 rounded-2xl text-xs text-emerald-950 space-y-2.5"
+            >
+              <div className="flex items-center gap-1.5 text-emerald-900 font-black">
+                <Zap className="w-4 h-4 text-amber-500 fill-amber-500" />
+                <span>Metode 1: Eksekusi SQL Otomatis Langsung dari Aplikasi</span>
+              </div>
+              <p className="text-[11px] text-emerald-800 leading-relaxed">
+                Masukkan <strong>Password Database Supabase</strong> Anda di bawah ini untuk menjalankan skrip pembuatan tabel, kolom, RLS, dan replikasi secara instan:
+              </p>
+
+              <div>
+                <input
+                  type="password"
+                  value={dbPassword}
+                  onChange={(e) => setDbPassword(e.target.value)}
+                  placeholder="Password database Supabase Anda..."
+                  className="w-full bg-white border border-emerald-300 rounded-xl px-3 py-2 text-xs font-mono text-stone-900 focus:outline-none focus:ring-2 focus:ring-emerald-600"
+                />
+                <p className="text-[10px] text-stone-500 mt-1">
+                  Password yang Anda atur saat membuat proyek Supabase. (Atau gunakan Connection String)
+                </p>
+              </div>
+
+              {sqlResult && (
+                <div className="p-2.5 bg-emerald-100 border border-emerald-300 text-emerald-900 rounded-xl text-[11px] font-bold flex items-center gap-1.5 animate-in fade-in">
+                  <Check className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>{sqlResult}</span>
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={executingSql || !dbPassword.trim()}
+                className={`w-full py-2.5 rounded-xl text-xs font-bold transition flex items-center justify-center gap-1.5 shadow-xs ${
+                  dbPassword.trim()
+                    ? 'bg-emerald-800 hover:bg-emerald-700 text-white'
+                    : 'bg-stone-300 text-stone-500 cursor-not-allowed'
+                }`}
+              >
+                {executingSql ? (
+                  <>
+                    <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                    <span>Menjalankan Skrip SQL ke Supabase...</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="w-3.5 h-3.5 text-amber-300 fill-amber-300" />
+                    <span>⚡ Jalankan Skrip SQL ke Database Sekarang</span>
+                  </>
+                )}
+              </button>
+            </form>
+
+            {/* METODE 2: SALIN & JALANKAN DI SUPABASE WEB */}
             <div className="bg-blue-50 border border-blue-200 p-3.5 rounded-2xl text-xs text-blue-950 space-y-2">
-              <div className="font-black flex items-center gap-1.5 text-blue-900">
-                <FileCode className="w-4 h-4 text-blue-700" />
-                <span>Cara Memasang Tabel di Supabase (Hanya 1 Kali):</span>
+              <div className="font-black flex items-center justify-between">
+                <div className="flex items-center gap-1.5 text-blue-900">
+                  <FileCode className="w-4 h-4 text-blue-700" />
+                  <span>Metode 2: Jalankan di SQL Editor Supabase Web</span>
+                </div>
+                <a
+                  href={`https://supabase.com/dashboard/project/${projectRef}/sql/new`}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-2.5 py-1 bg-blue-700 hover:bg-blue-800 text-white rounded-lg text-[10px] font-bold transition flex items-center gap-1 shadow-2xs"
+                >
+                  <span>Buka SQL Editor</span>
+                  <ExternalLink className="w-2.5 h-2.5" />
+                </a>
               </div>
               <ol className="list-decimal pl-4 space-y-1 text-[11px] text-blue-900">
-                <li>
-                  Buka Dashboard Supabase Anda: <a href="https://supabase.com/dashboard" target="_blank" rel="noopener noreferrer" className="font-bold underline">supabase.com/dashboard</a>
-                </li>
-                <li>Pilih proyek database Anda, lalu klik menu <strong>SQL Editor</strong> di bilah kiri.</li>
-                <li>Klik tombol <strong>New Query</strong>, tempelkan skrip di bawah ini, lalu klik tombol hijau <strong>Run</strong>!</li>
+                <li>Klik tombol <strong>Buka SQL Editor</strong> di atas atau masuk ke Dashboard Supabase proyek Anda.</li>
+                <li>Klik tombol <strong>Salin Skrip SQL</strong> di bawah ini, tempelkan (paste) di editor Supabase.</li>
+                <li>Klik tombol hijau <strong>Run</strong> di Supabase. 6 tabel dan hak akses RLS siap digunakan!</li>
               </ol>
             </div>
 
             <div className="flex items-center justify-between pt-1">
               <span className="text-xs font-black text-stone-800">
-                Skrip SQL Schema Supabase (6 Tabel & RLS):
+                Skrip SQL Lengkap (Idempoten & Support Kolom Baru):
               </span>
               <button
                 type="button"
@@ -546,7 +843,7 @@ CREATE POLICY "Public private_messages write" ON public.private_messages FOR ALL
                 ) : (
                   <>
                     <Copy className="w-3.5 h-3.5" />
-                    <span>Salin Skrip SQL</span>
+                    <span>Salin Seluruh Skrip SQL</span>
                   </>
                 )}
               </button>

@@ -907,6 +907,126 @@ app.post('/api/supabase/sync-all', async (_req, res) => {
   }
 });
 
+// Pull Data from Supabase to Local AppState
+app.post('/api/supabase/pull', async (_req, res) => {
+  if (!supabaseClient) {
+    return res.status(400).json({ error: 'Supabase belum dikonfigurasi.' });
+  }
+
+  try {
+    let pulledPosts = 0;
+    let pulledProducts = 0;
+    let pulledChat = 0;
+
+    // Pull posts from Supabase
+    try {
+      const { data: dbPosts, error: postErr } = await supabaseClient
+        .from('posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(50);
+
+      if (!postErr && dbPosts && dbPosts.length > 0) {
+        for (const p of dbPosts) {
+          const existingIdx = appState.posts.findIndex((ep) => ep.id === p.id);
+          const mappedPost: Post = {
+            id: p.id,
+            authorName: p.author_name || 'Petani Dahu',
+            authorRole: p.author_role || 'Petani',
+            authorAvatar:
+              p.author_avatar ||
+              'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80',
+            authorVerified: p.author_verified !== false,
+            authorLocation: p.author_location || 'Indonesia',
+            createdAt: p.created_at
+              ? new Date(p.created_at).toLocaleTimeString('id-ID', {
+                  hour: '2-digit',
+                  minute: '2-digit',
+                }) + ' WIB'
+              : 'Baru saja',
+            content: p.content || '',
+            mediaType: p.media_type || (p.video_url ? 'video' : p.image_url ? 'image' : 'none'),
+            mediaUrl: p.media_url || p.image_url || p.video_url || '',
+            likes: p.likes || 0,
+            likedBy: [],
+            commentsCount: p.comments_count || 0,
+            comments: [],
+            shares: p.shares || 0,
+            tag: p.tag || 'Komunitas Tani',
+          };
+          if (existingIdx >= 0) {
+            appState.posts[existingIdx] = { ...appState.posts[existingIdx], ...mappedPost };
+          } else {
+            appState.posts.unshift(mappedPost);
+          }
+        }
+        pulledPosts = dbPosts.length;
+      }
+    } catch (e: any) {
+      console.warn('Pull posts notice:', e.message);
+    }
+
+    // Pull products from Supabase
+    try {
+      const { data: dbProducts, error: prodErr } = await supabaseClient
+        .from('products')
+        .select('*')
+        .limit(50);
+
+      if (!prodErr && dbProducts && dbProducts.length > 0) {
+        for (const pr of dbProducts) {
+          const existingIdx = appState.products.findIndex((ep) => ep.id === pr.id);
+          const mappedProd: Product = {
+            id: pr.id,
+            title: pr.title || pr.name || 'Produk Tani',
+            category: pr.category || 'Hasil Panen',
+            discountPrice: Number(pr.price || pr.discount_price || 0),
+            originalPrice: Number(pr.original_price || pr.price || 0),
+            stock: Number(pr.stock || 100),
+            weight: pr.unit || pr.weight || '1 kg',
+            sellerName: pr.seller_name || 'Petani Lokal',
+            sellerCity: pr.location || pr.seller_city || 'Subang',
+            sellerWa: pr.seller_phone || '08123456789',
+            sellerAvatar:
+              pr.seller_avatar ||
+              'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80',
+            sellerRating: Number(pr.rating || 4.9),
+            soldCount: Number(pr.sold_count || 0),
+            mediaType: pr.media_type || (pr.video_url ? 'video' : 'image'),
+            mediaUrl:
+              pr.media_url ||
+              pr.image_url ||
+              pr.video_url ||
+              'https://images.unsplash.com/photo-1586201375761-83865001e31c?w=600&auto=format&fit=crop&q=80',
+            description: pr.description || 'Produk hasil panen pertanian berkualitas.',
+            createdAt: pr.created_at ? new Date(pr.created_at).toLocaleDateString('id-ID') : 'Baru saja',
+            views: Number(pr.views || 0),
+          };
+          if (existingIdx >= 0) {
+            appState.products[existingIdx] = { ...appState.products[existingIdx], ...mappedProd };
+          } else {
+            appState.products.unshift(mappedProd);
+          }
+        }
+        pulledProducts = dbProducts.length;
+      }
+    } catch (e: any) {
+      console.warn('Pull products notice:', e.message);
+    }
+
+    saveData();
+
+    res.json({
+      success: true,
+      message: `Berhasil menarik data dari Supabase (${pulledPosts} postingan, ${pulledProducts} produk).`,
+      counts: { posts: pulledPosts, products: pulledProducts, chat: pulledChat },
+      data: appState,
+    });
+  } catch (err: any) {
+    res.status(500).json({ error: 'Gagal menarik data dari Supabase: ' + err.message });
+  }
+});
+
 // Test Connection Endpoint
 app.post('/api/supabase/test', async (_req, res) => {
   if (!supabaseClient) {
@@ -951,21 +1071,34 @@ app.post('/api/supabase/test', async (_req, res) => {
 // Execute SQL Schema to Supabase Database Endpoint
 app.post('/api/supabase/execute-sql', async (req, res) => {
   const { connectionString, dbPassword, customSql } = req.body;
-  let connStr = (connectionString || '').trim();
+  const candidateUris: string[] = [];
 
-  // If dbPassword provided and supabaseUrl is known, assemble the direct postgres URI
-  if (!connStr && dbPassword && supabaseUrl) {
+  if (connectionString && connectionString.trim()) {
+    candidateUris.push(connectionString.trim());
+  } else if (dbPassword && supabaseUrl) {
     const match = supabaseUrl.match(/https:\/\/([a-zA-Z0-9_-]+)\.supabase\.co/);
     if (match) {
       const ref = match[1];
-      connStr = `postgresql://postgres:${encodeURIComponent(dbPassword.trim())}@db.${ref}.supabase.co:5432/postgres`;
+      const encodedPass = encodeURIComponent(dbPassword.trim());
+      // 1. Transaction Pooler (port 6543 - IPv4 compatible)
+      candidateUris.push(
+        `postgresql://postgres.${ref}:${encodedPass}@aws-0-ap-southeast-1.pooler.supabase.com:6543/postgres`
+      );
+      // 2. Session Pooler (port 5432 - IPv4 compatible)
+      candidateUris.push(
+        `postgresql://postgres.${ref}:${encodedPass}@aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres`
+      );
+      // 3. Direct host (port 5432)
+      candidateUris.push(
+        `postgresql://postgres:${encodedPass}@db.${ref}.supabase.co:5432/postgres`
+      );
     }
   }
 
-  if (!connStr) {
+  if (candidateUris.length === 0) {
     return res.status(400).json({
       error:
-        'Harap masukkan Connection String PostgreSQL Supabase (misal: postgresql://postgres:[password]@db.[ref].supabase.co:5432/postgres) atau Password Database Supabase Anda.',
+        'Harap masukkan Connection String PostgreSQL Supabase atau Password Database Supabase Anda.',
     });
   }
 
@@ -981,40 +1114,54 @@ app.post('/api/supabase/execute-sql', async (req, res) => {
     return res.status(400).json({ error: 'Skrip SQL schema tidak ditemukan.' });
   }
 
-  const client = new PgClient({
-    connectionString: connStr,
-    ssl: { rejectUnauthorized: false },
-    connectionTimeoutMillis: 12000,
-  });
+  let lastError: any = null;
+  let executionSuccess = false;
 
-  try {
-    await client.connect();
-    await client.query(sqlToRun);
-    await client.end();
-
-    // After successfully running SQL, automatically sync all existing data!
-    let syncSummary = null;
-    try {
-      syncSummary = await syncAllDataToSupabase();
-    } catch (syncErr: any) {
-      console.warn('Post-migration auto-sync notice:', syncErr.message);
-    }
-
-    res.json({
-      success: true,
-      message:
-        'Skrip SQL berhasil dijalankan ke Supabase! 6 tabel (posts, products, chat_messages, profiles, comments, private_messages), Row Level Security (RLS), dan Realtime Publications telah aktif.',
-      syncSummary,
+  for (const connStr of candidateUris) {
+    const client = new PgClient({
+      connectionString: connStr,
+      ssl: { rejectUnauthorized: false },
+      connectionTimeoutMillis: 10000,
     });
-  } catch (err: any) {
+
     try {
+      await client.connect();
+      await client.query(sqlToRun);
       await client.end();
-    } catch {}
-    console.error('Error executing SQL on Supabase:', err);
-    res.status(500).json({
-      error: 'Gagal menjalankan SQL ke database Supabase: ' + err.message,
+      executionSuccess = true;
+      break;
+    } catch (err: any) {
+      lastError = err;
+      try {
+        await client.end();
+      } catch {}
+      console.warn('Attempted connection failed:', err.message);
+    }
+  }
+
+  if (!executionSuccess) {
+    console.error('All connection attempts failed:', lastError);
+    return res.status(500).json({
+      error:
+        'Gagal menjalankan SQL ke database Supabase: ' +
+        (lastError?.message || 'Koneksi database gagal. Periksa kembali password atau connection string Anda.'),
     });
   }
+
+  // After successfully running SQL, automatically sync all existing data!
+  let syncSummary = null;
+  try {
+    syncSummary = await syncAllDataToSupabase();
+  } catch (syncErr: any) {
+    console.warn('Post-migration auto-sync notice:', syncErr.message);
+  }
+
+  res.json({
+    success: true,
+    message:
+      'Skrip SQL berhasil dijalankan ke Supabase! 6 tabel (posts, products, chat_messages, profiles, comments, private_messages), Row Level Security (RLS), dan Realtime Publications telah aktif.',
+    syncSummary,
+  });
 });
 
 // Get Supabase SQL Schema Text Endpoint
@@ -2879,6 +3026,87 @@ app.get('/api/weather', async (req, res) => {
   }
 });
 
+// Dedicated Public Privacy Policy Endpoint for Google Play Store compliance
+app.get('/privacy', (req, res) => {
+  if (req.query.json === 'true') {
+    return res.json({
+      name: 'Dahu Tani / Suni Dahu',
+      version: '2.5.0 Pro',
+      compliance: 'Undang-Undang Perlindungan Data Pribadi (UU PDP No. 27/2022) & Google Play Developer Policy',
+      contact: 'sunidahu4@gmail.com',
+      lastUpdated: '2026-10-07',
+    });
+  }
+  const html = `<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kebijakan Privasi - Dahu Tani / Suni Dahu (Google Play Store)</title>
+  <meta name="description" content="Kebijakan Privasi resmi aplikasi Dahu Tani untuk Google Play Store dan UU PDP No. 27/2022.">
+  <style>
+    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; line-height: 1.6; color: #1c1917; max-width: 760px; margin: 0 auto; padding: 24px; background: #fafaf9; }
+    header { border-bottom: 2px solid #e7e5e4; padding-bottom: 16px; margin-bottom: 24px; }
+    h1 { color: #15803d; font-size: 26px; margin: 0 0 6px 0; font-weight: 800; }
+    .badge { display: inline-block; background: #dcfce7; color: #166534; font-weight: 700; font-size: 11px; padding: 4px 10px; border-radius: 999px; margin-bottom: 12px; border: 1px solid #bbf7d0; text-transform: uppercase; letter-spacing: 0.5px; }
+    .meta { font-size: 13px; color: #78716c; }
+    .card { background: white; border: 1px solid #e7e5e4; border-radius: 16px; padding: 20px; margin-bottom: 16px; box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+    h2 { font-size: 16px; color: #166534; margin: 0 0 8px 0; font-weight: 700; }
+    p { font-size: 14px; color: #44403c; margin: 0 0 10px 0; }
+    p:last-child { margin-bottom: 0; }
+    ul { margin: 8px 0 0 20px; padding: 0; font-size: 14px; color: #44403c; }
+    li { margin-bottom: 6px; }
+    .footer { text-align: center; margin-top: 32px; padding-top: 20px; border-top: 1px solid #e7e5e4; font-size: 13px; color: #78716c; }
+    a.btn { display: inline-block; background: #15803d; color: white; text-decoration: none; font-weight: 700; padding: 10px 20px; border-radius: 12px; font-size: 14px; margin-top: 12px; transition: background 0.2s; }
+    a.btn:hover { background: #166534; }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="badge">Standar Resmi Google Play Store & UU PDP No. 27/2022</div>
+    <h1>Kebijakan Privasi Dahu Tani / Suni Dahu</h1>
+    <div class="meta">Berlaku Efektif: 7 Oktober 2026 | Kontak Pengembang: sunidahu4@gmail.com</div>
+  </header>
+
+  <div class="card">
+    <h2>1. Gambaran Umum & Komitmen Privasi</h2>
+    <p>Aplikasi <strong>Dahu Tani (Suni Dahu)</strong> menghargai dan melindungi hak privasi setiap petani dan pengguna layanan kami. Kami tidak pernah membagikan, meminjamkan, atau menjual data pribadi Anda kepada pihak ketiga untuk kepentingan periklanan atau monetisasi data.</p>
+  </div>
+
+  <div class="card">
+    <h2>2. Penggunaan Data Lokasi GPS Presisi</h2>
+    <p>Data titik koordinat lintang dan bujur (latitude & longitude) perangkat Anda hanya diakses saat Anda secara sukarela menekan tombol <strong>"Deteksi Lokasi Lahan Saya (GPS)"</strong>. Koordinat ini semata-mata digunakan untuk meminta data agrometeorologi (curah hujan milimeter, potensi hembusan angin, kelembaban udara) langsung ke satelit BMKG/Open-Meteo di lahan pertanian Anda.</p>
+  </div>
+
+  <div class="card">
+    <h2>3. Akses Kamera & Galeri Foto</h2>
+    <p>Izin kamera dan penyimpanan foto hanya diaktifkan ketika pengguna memilih untuk:</p>
+    <ul>
+      <li>Mengunggah foto daun/buah tanaman untuk diperiksa oleh <strong>Dokter Tanaman Gemini AI</strong> guna memperoleh diagnosa hama dan rekomendasi obat/pupuk.</li>
+      <li>Mengunggah foto produk hasil panen untuk dipasarkan di <strong>Pasar Tani</strong>.</li>
+      <li>Memperbarui foto profil petani atau foto sampul lahan.</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>4. Kontak WhatsApp & Data Komunikasi</h2>
+    <p>Nomor WhatsApp hanya ditampilkan secara transparan pada profil dan etalase produk tani atas izin penjual, sehingga pembeli dan penyuluh pertanian dapat bertransaksi langsung secara aman tanpa potongan biaya transaksi.</p>
+  </div>
+
+  <div class="card">
+    <h2>5. Keamanan & Penghapusan Akun Pengguna</h2>
+    <p>Seluruh komunikasi transfer data menggunakan protokol enkripsi standar industri HTTPS/TLS. Anda memiliki hak penuh kapan saja untuk mengubah profil Anda atau meminta penghapusan akun beserta seluruh rekam jejak data dengan mengirimkan email permohonan ke: <strong>sunidahu4@gmail.com</strong>.</p>
+  </div>
+
+  <div class="footer">
+    <p>&copy; 2026 Dahu Tani Indonesia • Inovasi Pertanian Digital Terbuka</p>
+    <a class="btn" href="/">Buka Aplikasi Dahu Tani</a>
+  </div>
+</body>
+</html>`;
+  res.status(200).set({ 'Content-Type': 'text/html; charset=utf-8' }).end(html);
+});
+
 // Vite middleware in dev or static files in production
 async function startServer() {
   if (!isProduction) {
@@ -2890,10 +3118,15 @@ async function startServer() {
       },
       appType: 'spa',
     });
+    app.use(express.static(path.resolve(process.cwd(), 'public')));
     app.use(vite.middlewares);
 
     app.get('*', async (req, res, next) => {
-      if (req.originalUrl.startsWith('/api')) {
+      if (
+        req.originalUrl.startsWith('/api') ||
+        req.originalUrl.startsWith('/privacy') ||
+        req.originalUrl.includes('manifest')
+      ) {
         return next();
       }
       try {

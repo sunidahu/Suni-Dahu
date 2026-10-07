@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Search,
   Filter,
@@ -15,11 +15,15 @@ import {
   PhoneCall,
   CheckCircle2,
   Package,
+  Activity,
+  TrendingUp,
 } from 'lucide-react';
 import { Product } from '../types';
+import { CommodityPriceTrendChart } from './CommodityPriceTrendChart';
 
 interface MarketplaceTabProps {
   products: Product[];
+  initialSelectedProduct?: Product | null;
   onOpenCreateProduct: () => void;
   onOpenDirectChat: (product: Product) => void;
   onBuyProduct: (product: Product, quantity: number) => Promise<void>;
@@ -28,6 +32,7 @@ interface MarketplaceTabProps {
 
 export const MarketplaceTab: React.FC<MarketplaceTabProps> = ({
   products,
+  initialSelectedProduct,
   onOpenCreateProduct,
   onOpenDirectChat,
   onBuyProduct,
@@ -35,9 +40,15 @@ export const MarketplaceTab: React.FC<MarketplaceTabProps> = ({
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('Semua');
-  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(initialSelectedProduct || null);
   const [buySuccess, setBuySuccess] = useState(false);
   const [isBuying, setIsBuying] = useState(false);
+
+  useEffect(() => {
+    if (initialSelectedProduct) {
+      setSelectedProduct(initialSelectedProduct);
+    }
+  }, [initialSelectedProduct]);
 
   const categories = [
     'Semua',
@@ -183,16 +194,30 @@ export const MarketplaceTab: React.FC<MarketplaceTabProps> = ({
                     {product.title}
                   </h3>
 
-                  {/* Price Section with Harga Coret */}
-                  <div className="mt-2">
-                    <div className="text-sm font-extrabold text-emerald-800">
-                      Rp {product.discountPrice.toLocaleString('id-ID')}
-                    </div>
-                    {product.originalPrice > product.discountPrice && (
-                      <div className="text-[10px] text-stone-400 line-through">
-                        Rp {product.originalPrice.toLocaleString('id-ID')}
+                  {/* Price Section with Harga Coret & Trend Chip */}
+                  <div className="mt-2 flex items-center justify-between gap-1">
+                    <div>
+                      <div className="text-sm font-extrabold text-emerald-800">
+                        Rp {product.discountPrice.toLocaleString('id-ID')}
                       </div>
-                    )}
+                      {product.originalPrice > product.discountPrice && (
+                        <div className="text-[10px] text-stone-400 line-through">
+                          Rp {product.originalPrice.toLocaleString('id-ID')}
+                        </div>
+                      )}
+                    </div>
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setSelectedProduct(product);
+                      }}
+                      className="px-1.5 py-0.5 rounded-lg bg-emerald-50 hover:bg-emerald-100 text-emerald-800 border border-emerald-200/80 text-[9px] font-bold flex items-center gap-0.5 transition"
+                      title="Lihat Tren Harga 30 Hari (Recharts)"
+                    >
+                      <Activity className="w-2.5 h-2.5 text-emerald-700" />
+                      <span>Tren 30H</span>
+                    </button>
                   </div>
 
                   {/* Seller & Location */}
@@ -336,6 +361,9 @@ export const MarketplaceTab: React.FC<MarketplaceTabProps> = ({
                   </span>
                 </div>
               </div>
+
+              {/* 30-Day Commodity Price Trend Visualization (Recharts) */}
+              <CommodityPriceTrendChart product={selectedProduct} />
 
               {/* Description */}
               <div>

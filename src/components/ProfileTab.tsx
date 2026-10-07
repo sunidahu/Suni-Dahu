@@ -32,6 +32,7 @@ import {
   LogOut,
   LogIn,
   ChevronRight,
+  Smartphone,
 } from 'lucide-react';
 import { UserProfile, AnalyticsData, FollowerUser } from '../types';
 
@@ -47,6 +48,8 @@ interface ProfileTabProps {
   onOpenAboutApp?: () => void;
   onOpenPrivacyPolicy?: () => void;
   onOpenAuthModal?: () => void;
+  onOpenPlayStore?: () => void;
+  onOpenPublishModal?: () => void;
   onLogout?: () => void;
 }
 
@@ -62,6 +65,8 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
   onOpenAboutApp,
   onOpenPrivacyPolicy,
   onOpenAuthModal,
+  onOpenPlayStore,
+  onOpenPublishModal,
   onLogout,
 }) => {
   const [isAnalyticsPinned, setIsAnalyticsPinned] = useState(true);
@@ -706,6 +711,51 @@ export const ProfileTab: React.FC<ProfileTabProps> = ({
               </div>
               <ChevronRight className="w-4 h-4 text-stone-400 group-hover:translate-x-0.5 transition" />
             </button>
+
+            {/* Tombol Google Play Store */}
+            {onOpenPlayStore && (
+              <button
+                type="button"
+                onClick={onOpenPlayStore}
+                className="w-full p-3 rounded-2xl bg-emerald-50/80 hover:bg-emerald-100/80 border border-emerald-300 flex items-center justify-between text-left transition group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-emerald-600 text-white flex items-center justify-center shadow-xs">
+                    <Smartphone className="w-4 h-4 stroke-[2.2]" />
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-1.5">
+                      <h4 className="font-bold text-xs text-emerald-950">Unggah ke Google Play Store</h4>
+                      <span className="px-1.5 py-0.2 text-[8px] font-black uppercase bg-amber-400 text-emerald-950 rounded">
+                        Bisa Sekali
+                      </span>
+                    </div>
+                    <p className="text-[10px] text-emerald-800 font-medium">Panduan konversi APK / AAB & checklist</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-emerald-600 group-hover:translate-x-0.5 transition" />
+              </button>
+            )}
+
+            {/* Tombol Publikasikan & Link Aplikasi */}
+            {onOpenPublishModal && (
+              <button
+                type="button"
+                onClick={onOpenPublishModal}
+                className="w-full p-3 rounded-2xl bg-blue-50/70 hover:bg-blue-100/70 border border-blue-200 flex items-center justify-between text-left transition group"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-xl bg-blue-600 text-white flex items-center justify-center shadow-xs">
+                    <Share2 className="w-4 h-4 stroke-[2.2]" />
+                  </div>
+                  <div>
+                    <h4 className="font-bold text-xs text-blue-950">Publikasikan & Link Aplikasi</h4>
+                    <p className="text-[10px] text-blue-800 font-medium">Salin link live publik, QR Code & kirim WA</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-4 h-4 text-blue-600 group-hover:translate-x-0.5 transition" />
+              </button>
+            )}
           </div>
 
           {/* Sesi Login / Logout */}

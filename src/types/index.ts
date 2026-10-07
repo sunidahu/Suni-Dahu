@@ -90,7 +90,7 @@ export interface PrivateConversation {
 
 export interface NotificationItem {
   id: string;
-  type: 'chat' | 'comment' | 'sale';
+  type: 'chat' | 'comment' | 'sale' | 'system';
   title: string;
   message: string;
   timestamp: string;

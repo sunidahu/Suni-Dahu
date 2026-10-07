@@ -17,6 +17,13 @@ import { CreatePostModal } from './components/CreatePostModal';
 import { CreateProductModal } from './components/CreateProductModal';
 import { ShareModal } from './components/ShareModal';
 import { SuprabestConfigModal } from './components/SuprabestConfigModal';
+import { SystemSettingsModal } from './components/SystemSettingsModal';
+import { HelpCenterModal } from './components/HelpCenterModal';
+import { PrivacyPolicyModal } from './components/PrivacyPolicyModal';
+import { AboutAppModal } from './components/AboutAppModal';
+import { AuthModal } from './components/AuthModal';
+import { GooglePlayStoreModal } from './components/GooglePlayStoreModal';
+import { PublishAppModal } from './components/PublishAppModal';
 import { api } from './services/api';
 import {
   Post,
@@ -157,6 +164,38 @@ export default function App() {
   const [isCreatePostOpen, setIsCreatePostOpen] = useState(false);
   const [isCreateProductOpen, setIsCreateProductOpen] = useState(false);
   const [isSuprabestModalOpen, setIsSuprabestModalOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [isHelpOpen, setIsHelpOpen] = useState(false);
+  const [isPrivacyOpen, setIsPrivacyOpen] = useState(false);
+  const [isAboutOpen, setIsAboutOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isPlayStoreOpen, setIsPlayStoreOpen] = useState(false);
+  const [isPublishOpen, setIsPublishOpen] = useState(false);
+  const [selectedMarketplaceProduct, setSelectedMarketplaceProduct] = useState<Product | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem('suni_dahu_logged_in') !== 'false';
+    } catch {
+      return true;
+    }
+  });
+
+  // URL route & query listener for Play Store / Privacy / Publish links
+  useEffect(() => {
+    try {
+      const path = window.location.pathname.toLowerCase();
+      const search = window.location.search.toLowerCase();
+      if (path.includes('privacy') || search.includes('privacy')) {
+        setIsPrivacyOpen(true);
+      }
+      if (search.includes('playstore') || search.includes('googleplay') || search.includes('apk') || search.includes('aab')) {
+        setIsPlayStoreOpen(true);
+      }
+      if (search.includes('publish') || search.includes('bagikan') || search.includes('shareapp')) {
+        setIsPublishOpen(true);
+      }
+    } catch {}
+  }, []);
   const [shareData, setShareData] = useState<{
     isOpen: boolean;
     title: string;
@@ -415,6 +454,42 @@ export default function App() {
     setProfile(updatedProfile);
   };
 
+  const handleLogin = async (userData: Partial<UserProfile>) => {
+    try {
+      const updatedProfile = await api.updateProfile(userData);
+      setProfile(updatedProfile);
+    } catch {
+      setProfile((prev) => ({ ...prev, ...userData }));
+    }
+    setIsLoggedIn(true);
+    try {
+      localStorage.setItem('suni_dahu_logged_in', 'true');
+    } catch {}
+    setActiveToastNotification({
+      id: `login-${Date.now()}`,
+      type: 'system',
+      title: 'Berhasil Masuk Akun',
+      message: `Selamat datang, ${userData.name || profile.name}! Akun Anda siap digunakan.`,
+      timestamp: 'Baru saja',
+      read: false,
+    });
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    try {
+      localStorage.setItem('suni_dahu_logged_in', 'false');
+    } catch {}
+    setActiveToastNotification({
+      id: `logout-${Date.now()}`,
+      type: 'system',
+      title: 'Berhasil Keluar Akun',
+      message: 'Anda telah keluar. Anda tetap dapat menjelajah produk dan cuaca dalam mode tamu.',
+      timestamp: 'Baru saja',
+      read: false,
+    });
+  };
+
   const handleToggleFollow = async (targetUser: FollowerUser) => {
     try {
       const res = await api.toggleFollow(targetUser);
@@ -444,6 +519,7 @@ export default function App() {
 
   const handleSelectProduct = (product: Product) => {
     api.trackVisit('product', product.id, `${profile.city}, ${profile.province}`);
+    setSelectedMarketplaceProduct(product);
     setActiveTab('pasar');
   };
 
@@ -516,6 +592,16 @@ export default function App() {
         onOpenCreateProduct={() => setIsCreateProductOpen(true)}
         onOpenSuprabestModal={() => setIsSuprabestModalOpen(true)}
         onOpenNotifications={() => setIsNotificationDrawerOpen(true)}
+        onOpenSettings={() => setIsSettingsOpen(true)}
+        onOpenHelp={() => setIsHelpOpen(true)}
+        onOpenPlayStore={() => setIsPlayStoreOpen(true)}
+        onOpenPublishModal={() => setIsPublishOpen(true)}
+        onOpenPrivacyPolicy={() => setIsPrivacyOpen(true)}
+        onOpenAuthModal={() => setIsAuthOpen(true)}
+        onLogout={handleLogout}
+        isLoggedIn={isLoggedIn}
+        userName={profile.name}
+        userAvatar={profile.avatarUrl}
         unreadNotificationCount={unreadNotificationCount}
         activeTab={activeTab}
       />
@@ -538,6 +624,7 @@ export default function App() {
         {activeTab === 'pasar' && (
           <MarketplaceTab
             products={products}
+            initialSelectedProduct={selectedMarketplaceProduct}
             onOpenCreateProduct={() => setIsCreateProductOpen(true)}
             onOpenDirectChat={handleOpenDirectChat}
             onBuyProduct={handleBuyProduct}
@@ -561,9 +648,18 @@ export default function App() {
           <ProfileTab
             profile={profile}
             analytics={analytics}
+            isLoggedIn={isLoggedIn}
             onUpdateProfile={handleUpdateProfile}
             onToggleFollow={handleToggleFollow}
             onShare={handleShare}
+            onOpenSettings={() => setIsSettingsOpen(true)}
+            onOpenHelpCenter={() => setIsHelpOpen(true)}
+            onOpenAboutApp={() => setIsAboutOpen(true)}
+            onOpenPrivacyPolicy={() => setIsPrivacyOpen(true)}
+            onOpenAuthModal={() => setIsAuthOpen(true)}
+            onOpenPlayStore={() => setIsPlayStoreOpen(true)}
+            onOpenPublishModal={() => setIsPublishOpen(true)}
+            onLogout={handleLogout}
           />
         )}
       </main>
@@ -619,6 +715,90 @@ export default function App() {
         onClose={() => setIsSuprabestModalOpen(false)}
         lastSyncTime={lastSyncTime}
         totalSyncedItems={posts.length + products.length + conversations.length + 1}
+      />
+
+      <SystemSettingsModal
+        isOpen={isSettingsOpen}
+        onClose={() => setIsSettingsOpen(false)}
+        profile={profile}
+        isLoggedIn={isLoggedIn}
+        onOpenEditProfile={() => {
+          setIsSettingsOpen(false);
+          setActiveTab('profil');
+        }}
+        onOpenHelpCenter={() => {
+          setIsSettingsOpen(false);
+          setIsHelpOpen(true);
+        }}
+        onOpenAboutApp={() => {
+          setIsSettingsOpen(false);
+          setIsAboutOpen(true);
+        }}
+        onOpenPrivacyPolicy={() => {
+          setIsSettingsOpen(false);
+          setIsPrivacyOpen(true);
+        }}
+        onOpenAuthModal={() => {
+          setIsSettingsOpen(false);
+          setIsAuthOpen(true);
+        }}
+        onOpenPlayStore={() => {
+          setIsSettingsOpen(false);
+          setIsPlayStoreOpen(true);
+        }}
+        onOpenPublishModal={() => {
+          setIsSettingsOpen(false);
+          setIsPublishOpen(true);
+        }}
+        onLogout={handleLogout}
+      />
+
+      <HelpCenterModal
+        isOpen={isHelpOpen}
+      />
+
+      <PrivacyPolicyModal
+        isOpen={isPrivacyOpen}
+        onClose={() => setIsPrivacyOpen(false)}
+      />
+
+      <AboutAppModal
+        isOpen={isAboutOpen}
+        onClose={() => setIsAboutOpen(false)}
+        onOpenHelpCenter={() => {
+          setIsAboutOpen(false);
+          setIsHelpOpen(true);
+        }}
+        onOpenPrivacyPolicy={() => {
+          setIsAboutOpen(false);
+          setIsPrivacyOpen(true);
+        }}
+      />
+
+      <AuthModal
+        isOpen={isAuthOpen}
+        onClose={() => setIsAuthOpen(false)}
+        currentProfile={profile}
+        isLoggedIn={isLoggedIn}
+        onLogin={handleLogin}
+      />
+
+      <GooglePlayStoreModal
+        isOpen={isPlayStoreOpen}
+        onClose={() => setIsPlayStoreOpen(false)}
+        onOpenPrivacyPolicy={() => {
+          setIsPlayStoreOpen(false);
+          setIsPrivacyOpen(true);
+        }}
+      />
+
+      <PublishAppModal
+        isOpen={isPublishOpen}
+        onClose={() => setIsPublishOpen(false)}
+        onOpenPlayStoreModal={() => {
+          setIsPublishOpen(false);
+          setIsPlayStoreOpen(true);
+        }}
       />
     </div>
   );
